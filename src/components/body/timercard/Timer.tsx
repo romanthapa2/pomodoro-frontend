@@ -31,7 +31,7 @@ const Timer: React.FC = () => {
   >("Pomodoro");
 
   const buttonConfigs = {
-    Pomodoro: pomodoroTime,
+    "Pomodoro": pomodoroTime,
     "Short Break": shortBreakTime,
     "Long Break": longBreakTime,
   } as const;
@@ -46,16 +46,16 @@ const Timer: React.FC = () => {
   };
 
   return (
-    <div className="text-white bg-gray-500 h-fit mx-2 mt-10 md:mx-[30%] rounded-md">
-      <div className="p-5">
-        <div className="flex justify-center items-center h-10 space-x-2">
+    <div className="text-white bg-gray-500 h-fit mx-2 mt-10 md:mx-[34%] rounded-md">
+      <div className="p-5 space-y-4">
+        <div className="flex justify-center items-center gap-2">
           {Object.keys(buttonConfigs).map((label) => (
             <Button
               key={label}
               onClick={() =>
                 handleButtonClick(label as keyof typeof buttonConfigs)
               }
-              className={`h-8 w-25 rounded-md ${
+              className={`min-h-10 w-28  rounded-md p-5  ${
                 activeButton === label ? "bg-gray-700" : "bg-gray-500"
               }`}
             >
@@ -66,10 +66,10 @@ const Timer: React.FC = () => {
 
         <TimerDisplay time={time} />
         
-        <div className="h-20 w-full flex justify-center items-center">
+        <div className="h-fit w-full flex justify-center items-center">
           <button
             onClick={startPauseTimer}
-            className="px-4 py-3 text-gray-700 bg-white h-16 w-48 text-3xl rounded-lg"
+            className="px-10 py-5 text-gray-700 bg-white font-medium h-14 w-48 text-2xl rounded-lg flex justify-center items-center"
           >
             {status === "Pause" ? "START" : "PAUSE"}
           </button>

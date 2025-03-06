@@ -29,7 +29,7 @@ const Task: React.FC = () => {
 
   return (
     <>
-      <div className=" h-full mx-2 md:mx-[30%] flex flex-col justify-start items-center mt-8 px-3">
+      <div className=" h-full mx-2 md:mx-[33%] flex flex-col justify-start items-center mt-8 px-3">
         <div className="flex flex-row w-full items-center justify-between  ">
           <div className="mb-5 mt-5 text-white text-xl">Tasks</div>
           <PiDotsThreeOutlineVerticalThin
