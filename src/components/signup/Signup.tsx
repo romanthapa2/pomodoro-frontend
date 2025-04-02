@@ -17,7 +17,7 @@ const Signup: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetch(`https://pomodoro-backend-dkty.onrender.com/api/user/signup`, {
+    const response = await fetch(`http://localhost:5000/api/user/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

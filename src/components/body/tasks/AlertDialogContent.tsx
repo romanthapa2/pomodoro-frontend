@@ -7,29 +7,30 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useAppDispatch } from "@/reduxstore/AppHooks";
-import { addPomoTask,updateTask } from "@/reduxstore/TaskSlice";
+import { addTask, updateTask, deleteTask } from "@/reduxstore/TaskSlice";
+import type { Task } from "@/reduxstore/TaskSlice";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { deleteTask } from "@/reduxstore/TaskSlice";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface props {
   button: ReactNode;
   index?: number;
-  initialTask?: taskType;
+  initialTask?: Task;
   onClose: () => void;
-}
-interface taskType {
-  setTaskNo : number;
-  text: string;
-  completedTaskNo: number;
 }
 
 // when i click the add or edit button this component will show up
-const AlertDialogContent = ({ button, index, initialTask,onClose }: props) => {
+const AlertDialogContent = ({ button, index, initialTask, onClose }: props) => {
+  console.log("index",index)
   const dispatch = useAppDispatch();
-  const [task, setTask] = useState<taskType>({ setTaskNo: 1, text: "",completedTaskNo: 0 });
-
+  const [task, setTask] = useState<Task>({ 
+    title: "", 
+    description: "",
+    completed: false,
+    setTaskNo: 1,
+    completedTaskNo: 0 
+  });
 
   useEffect(() => {
     if (initialTask) {
@@ -37,27 +38,39 @@ const AlertDialogContent = ({ button, index, initialTask,onClose }: props) => {
     }
   }, [initialTask]);
 
-
   const handleIncrease = () => {
-    setTask((prevTask) => ({ ...prevTask, setTaskNo: prevTask.setTaskNo + 1 }));
+    setTask((prevTask) => ({ 
+      ...prevTask, 
+      setTaskNo: (prevTask.setTaskNo || 1) + 1 
+    }));
   };
+
   const handleDecrease = () => {
-    if (task.setTaskNo >= 2) {
-      setTask((prevTask) => ({ ...prevTask, setTaskNo: prevTask.setTaskNo - 1 }));
+    if ((task.setTaskNo || 1) >= 2) {
+      setTask((prevTask) => ({ 
+        ...prevTask, 
+        setTaskNo: (prevTask.setTaskNo || 1) - 1 
+      }));
     }
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTask((prevTask) => ({ ...prevTask, text: e.target.value }));
+    setTask((prevTask) => ({ ...prevTask, title: e.target.value }));
   };
 
-  const handleSubmit = async () => {
-    if (task.text.length >= 2) {
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (task.title.length >= 2) {
+      
       if (index !== undefined) {
+        console.log("index",index)
+        
         dispatch(updateTask({ index, task }));
       } else {
-        dispatch(addPomoTask(task));
+        dispatch(addTask(task));
       }
+      onClose();
     }
   };
 
@@ -69,7 +82,7 @@ const AlertDialogContent = ({ button, index, initialTask,onClose }: props) => {
   };
 
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       {/* if not having title and description it throws error so i am putting this two line of code */}
       <VisuallyHidden>
         <AlertDialogTitle>Dialog Title</AlertDialogTitle>
@@ -80,26 +93,26 @@ const AlertDialogContent = ({ button, index, initialTask,onClose }: props) => {
         type="text"
         autoFocus
         onChange={onChange}
-        value={task.text}
+        value={task.title}
         placeholder="What are you working on?"
       />
       <h2 className="font-medium">Estimated Pomodoros</h2>
       <div className="flex flex-row">
-        <h3 className="bg-slate-300 w-20 px-2 py-1 text-lg rounded">{task.setTaskNo}</h3>
+        <h3 className="bg-slate-300 w-20 px-2 py-1 text-lg rounded">{task.setTaskNo || 1}</h3>
 
-        <button className="mx-4 border px-2 py-1 text-lg rounded" onClick={handleIncrease}>
+        <button type="button" className="mx-4 border px-2 py-1 text-lg rounded" onClick={handleIncrease}>
           up
         </button>
-        <button className="border px-2 py-1 text-lg rounded" onClick={handleDecrease}>
+        <button type="button" className="border px-2 py-1 text-lg rounded" onClick={handleDecrease}>
           down
         </button>
       </div>
       <AlertDialogFooter>
-        {typeof button === "object" && <Button onClick={handleDeleteTask} >Delete</Button>}
-        <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-        <AlertDialogAction onClick={handleSubmit}>Continue</AlertDialogAction>
+        {typeof button === "object" && <Button type="button" onClick={handleDeleteTask}>Delete</Button>}
+        <AlertDialogCancel type="button" onClick={onClose}>Cancel</AlertDialogCancel>
+        <AlertDialogAction type="submit">Continue</AlertDialogAction>
       </AlertDialogFooter>
-    </>
+    </form>
   );
 };
 

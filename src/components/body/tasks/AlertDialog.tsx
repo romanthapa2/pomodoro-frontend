@@ -5,12 +5,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import AlertContent from "./AlertDialogContent";
 import { ReactNode, useState } from "react";
-
-interface Task {
-  text: string;
-  setTaskNo: number;
-  completedTaskNo: number;
-}
+import type { Task } from "@/reduxstore/TaskSlice";
 
 interface props {
   button: ReactNode;
@@ -25,14 +20,19 @@ export function AlertDialogDemo({
   index,
   initialTask,
 }: props) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleClose = () => {
-    setOpen(false);
+    setIsOpen(false);
   };
+
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
-        <button className={`${className}`} onClick={() => setOpen(true)}>
+        <button 
+          className={className}
+          onClick={() => setIsOpen(true)}
+        >
           {button}
         </button>
       </AlertDialogTrigger>

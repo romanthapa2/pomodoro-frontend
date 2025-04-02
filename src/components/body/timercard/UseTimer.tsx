@@ -5,8 +5,8 @@ import createTask from "./postFunctionCall";
 import { useSelector } from "react-redux";
 import type { Task } from "@/reduxstore/TaskSlice";
 import {
-  selectSelectedTaskindex,
-  selectPomoTask,
+  selectSelectedTaskIndex,
+  selectTasks,
 } from "@/reduxstore/TaskSlice";
 import { updateTask } from "@/reduxstore/TaskSlice";
 import { useAppDispatch } from "@/reduxstore/AppHooks";
@@ -15,8 +15,8 @@ dayjs.extend(duration);
 
 const useTimer = (initialTime: number, onTimerEnd?: () => void) => {
   const dispatch = useAppDispatch();
-  const pomoTask = useSelector(selectPomoTask) as Task[];
-  const selectedTaskindex = useSelector(selectSelectedTaskindex);
+  const tasks = useSelector(selectTasks);
+  const selectedTaskIndex = useSelector(selectSelectedTaskIndex);
 
   const [status, setStatus] = useState<"Start" | "Pause">("Pause");
   const [time, setTime] = useState<string>(`${initialTime}:00`);
@@ -35,17 +35,21 @@ const useTimer = (initialTime: number, onTimerEnd?: () => void) => {
     if (differenceTime <= 0) {
       clearInterval(timerId.current!);
       setStatus("Pause");
-      if (selectedTaskindex !== null && pomoTask[selectedTaskindex]) {
-        const updatedTask = {
-          ...pomoTask[selectedTaskindex],
-          completedTaskNo:
-            (pomoTask[selectedTaskindex].completedTaskNo || 0) + 1,
+      
+      if (selectedTaskIndex !== null && tasks[selectedTaskIndex]) {
+        const currentTask = tasks[selectedTaskIndex];
+        const updatedTask: Task = {
+          ...currentTask,
+          completedTaskNo: (currentTask.completedTaskNo || 0) + 1,
+          completed: (currentTask.completedTaskNo || 0) + 1 >= (currentTask.setTaskNo || 1)
         };
-        dispatch(updateTask({ index: selectedTaskindex, task: updatedTask }));
+        
+        dispatch(updateTask({ index: selectedTaskIndex, task: updatedTask }));
         
         createTask({
-          task: pomoTask[selectedTaskindex ?? 0].text,
-          total_minutes: initialTime,
+          title: currentTask.title,
+          description: `Completed in ${initialTime} minutes`,
+          completed: updatedTask.completed
         });
       }
 

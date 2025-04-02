@@ -1,53 +1,88 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./Store";
 
-export interface taskType {
-  pomoTask: object[];
-  selectedTaskindex: number | null;
-}
-
-const initialState: taskType = {
-  pomoTask: [],
-  selectedTaskindex: null,
-};
-
 export interface Task {
-  text: string;
-  setTaskNo : number;
-  completedTaskNo : number;
+  _id?: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  createdAt?: Date;
+  sessions?: string[];
+  setTaskNo?: number;
+  completedTaskNo?: number;
 }
 
-// interface updateTask extends Task{
+interface TaskState {
+  tasks: Task[];
+  selectedTaskIndex: number | null;
+  loading: boolean;
+  error: string | null;
+}
 
-// }
+const initialState: TaskState = {
+  tasks: [],
+  selectedTaskIndex: null,
+  loading: false,
+  error: null,
+};
 
 const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
-    addPomoTask: (state, action: PayloadAction<Task>) => {
-      state.pomoTask.push(action.payload);
+    addTask: (state, action: PayloadAction<Task>) => {
+      console.log("action.payload",action.payload)
+      if (!state.tasks) {
+        state.tasks = [];
+      }
+      state.tasks.push(action.payload);
+      state.loading = false;
+      state.error = null;
     },
     updateTask: (state, action: PayloadAction<{ index: number; task: Task }>) => {
       const { index, task } = action.payload;
-      state.pomoTask[index] = task;
+      state.tasks[index] = task;
+      state.loading = false;
+      state.error = null;
     },
     deleteTask: (state, action: PayloadAction<number>) => {
       const index = action.payload;
-      state.pomoTask = [...state.pomoTask.slice(0, index), ...state.pomoTask.slice(index + 1)];
+      state.tasks = [...state.tasks.slice(0, index), ...state.tasks.slice(index + 1)];
+      state.loading = false;
+      state.error = null;
     },
-    clearTask: (state) => {
-      state.pomoTask = [];
-      state.selectedTaskindex = null;
+    clearTasks: (state) => {
+      state.tasks = [];
+      state.selectedTaskIndex = null;
+      state.loading = false;
+      state.error = null;
     },
     selectTask: (state, action: PayloadAction<number>) => {
-      state.selectedTaskindex = action.payload;
+      state.selectedTaskIndex = action.payload;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      state.loading = false;
     },
   },
 });
 
-export const { addPomoTask,updateTask, deleteTask, clearTask,selectTask } = taskSlice.actions;
-export const selectPomoTask = (state: RootState) => state.taskSlice.pomoTask;
-// export const selectPomoTaskFirst = (state: RootState) => state.taskSlice.pomoTask[0];
-export const selectSelectedTaskindex = (state: RootState) => state.taskSlice.selectedTaskindex;
+export const { 
+  addTask,
+  updateTask,
+  deleteTask,
+  clearTasks,
+  selectTask,
+  setLoading,
+  setError
+} = taskSlice.actions;
+
+export const selectTasks = (state: RootState) => state.taskSlice.tasks;
+export const selectSelectedTaskIndex = (state: RootState) => state.taskSlice.selectedTaskIndex;
+export const selectTaskLoading = (state: RootState) => state.taskSlice.loading;
+export const selectTaskError = (state: RootState) => state.taskSlice.error;
+
 export default taskSlice.reducer;

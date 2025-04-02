@@ -1,36 +1,28 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState,useEffect } from "react";
-import fetchTask from "./FetchTak";
-import { Details } from "./Details";
+import { useState, useEffect } from "react";
+import fetchTask, { Task } from "./FetchTak";
+import  Details  from "./Details";
 import Cookies from "js-cookie";
-
-export interface Task {
-  _id: string;
-  user: string;
-  task: string;
-  total_minutes: number;
-  date: string;
-  __v: number;
-}
 
 const ReportContent = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-
   const [activeTab, setActiveTab] = useState("Summery");
-
 
   useEffect(() => {
     const fetchData = async () => {
       if (activeTab === "Details" && Cookies.get("accessToken") !== undefined) {
-        const response = await fetchTask();
-        if (response && response.success) {
-          setTasks(response.data.tasks);
+        try {
+          const response = await fetchTask();
+          if (response && response.success) {
+            setTasks(response.data.tasks);
+          }
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
         }
       }
     };
     fetchData();
   }, [activeTab]);
-
 
   return (
     <Tabs defaultValue="Summery" className="w-auto" onValueChange={setActiveTab}>
@@ -38,29 +30,20 @@ const ReportContent = () => {
         <TabsTrigger value="Summery" className="w-1/2">
           Summery
         </TabsTrigger>
-        <TabsTrigger
-          value="Details"
-          className="w-1/2"
-        >
+        <TabsTrigger value="Details" className="w-1/2">
           Details
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Summery" className="w-full">
-
+        {/* Summary content will go here */}
       </TabsContent>
-      <TabsContent value="Details"  className="h-96 w-auto" >
+      <TabsContent value="Details" className="h-96 w-auto">
         <header className="my-5 font-semibold">Focus Time Details</header>
-        <div className="flex flex-row space-x-24   list-none border-b py-2">
-         <li>
-          DATE
-         </li>
-         <li>
-          TASK
-         </li>
-         <li>
-          MINUTES
-         </li>
-          </div>
+        <div className="flex flex-row space-x-24 list-none border-b py-2">
+          <li>DATE</li>
+          <li>TASK</li>
+          <li>STATUS</li>
+        </div>
         {tasks.length > 0 ? (
           tasks.map((task) => <Details task={task} key={task._id} />)
         ) : (

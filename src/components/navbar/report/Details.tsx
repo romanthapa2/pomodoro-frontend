@@ -1,15 +1,17 @@
-import { Task } from "./ReportContent";
+import { Task } from "./FetchTak";
 
 interface DetailsProps {
   task: Task;
 }
 
-export const Details = ({ task }: DetailsProps) => {
+const Details: React.FC<DetailsProps> = ({ task }) => {
   return (
-    <div className="border-b flex flex-row space-x-28 py-3">
-      <p className="w-24"> {new Date(task.date).toLocaleString()}</p>
-      <h3 className="text-lg w-10">{task.task}</h3>
-      <p className="w-16">{task.total_minutes}</p>
+    <div className="flex flex-row space-x-24 list-none border-b py-2">
+      <li>{new Date(task.createdAt).toLocaleDateString()}</li>
+      <li>{task.title}</li>
+      <li>{task.completed ? "Completed" : "In Progress"}</li>
     </div>
   );
 };
+
+export default Details;
